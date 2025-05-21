@@ -1,3 +1,15 @@
 .popup__form {
   margin-top: 27px;
 }
+
+.popup__error {
+  font-size: 12px;
+  line-height: 14px;
+  color: red;
+  margin-top: 2px;
+  display: none;
+}
+
+.popup__error_visible {
+  display: block;
+}
