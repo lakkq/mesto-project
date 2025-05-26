@@ -877,7 +877,6 @@ template {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  /*Либо с точками из макета, либо этот набор свойств для эллипсиса текста в можно лучше*/
   margin: 0;
 }
 
