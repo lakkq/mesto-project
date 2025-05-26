@@ -95,7 +95,7 @@ loadInitialData();
 editButton.addEventListener("click", () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
-  clearValidation(profileForm, validationConfig);
+  clearValidation(profileForm, validationConfig, false);
   openModal(editProfileModal);
 });
 
@@ -117,6 +117,7 @@ profileForm.addEventListener("submit", async (evt) => {
   const { value: about } = jobInput;
 
   try {
+    saveButton.textContent = 'Сохранение...'
     const userData = await updateProfile(name, about);
     setUserInfo(userData);
     closeModal(editProfileModal);

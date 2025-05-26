@@ -16,53 +16,34 @@ export function addValidation(config = defaultConfig) {
 }
 
 function setupFormValidation(form, config) {
-  const inputs = Array.from(form.querySelectorAll(config.inputSelector));
-  const submitButton = form.querySelector(config.submitButtonSelector);
-  const errorContainers = new Map();
+  const inputs = form.querySelectorAll(config.inputSelector);
+  const button = form.querySelector(config.submitButtonSelector);
 
   inputs.forEach((input) => {
-    errorContainers.set(input, form.querySelector(`.${input.id}-error`));
-  });
-  const checkFormValidity = () => inputs.every((input) => input.validity.valid);
-
-  const updateSubmitButton = () => {
-    const isValid = checkFormValidity();
-    submitButton.disabled = !isValid;
-    submitButton.classList.toggle(config.inactiveButtonClass, !isValid);
-  };
-
-  const handleInput = (event) => {
-    const input = event.target;
-    validateInput(input, errorContainers.get(input), config);
-    updateSubmitButton();
-  };
-
-  const handleBlur = (event) => {
-    const input = event.target;
-    validateInput(input, errorContainers.get(input), config);
-  };
-
-  inputs.forEach((input) => {
-    input.addEventListener("input", handleInput);
-    input.addEventListener("blur", handleBlur);
+    input.addEventListener("input", () => {
+      validateInput(form, input, config);
+      toggleButtonState(inputs, button, config);
+    });
   });
 
-  updateSubmitButton();
+  toggleButtonState(inputs, button, config);
 }
 
-function validateInput(input, errorContainer, config) {
+function validateInput(form, input, config) {
+  const errorElement = form.querySelector(`.${input.name}-error`);
   if (input.validity.valid) {
-    hideInputError(input, errorContainer, config);
+    hideInputError(input, errorElement, config);
   } else {
-    showInputError(input, errorContainer, config);
+    showInputError(input, errorElement, config);
   }
 }
 
 function showInputError(input, errorContainer, config) {
   input.classList.add(config.inputErrorClass);
+  console.log(errorContainer);
 
   if (errorContainer) {
-    errorContainer.textContent = getErrorMessage(input);
+    errorContainer.textContent = input.validationMessage;
     errorContainer.classList.add(config.errorClass);
     errorContainer.setAttribute("aria-live", "polite");
   }
@@ -76,31 +57,6 @@ function hideInputError(input, errorContainer, config) {
     errorContainer.classList.remove(config.errorClass);
     errorContainer.removeAttribute("aria-live");
   }
-}
-
-function getErrorMessage(input) {
-  if (input.validity.valueMissing) {
-    return "Это поле обязательно для заполнения";
-  }
-
-  if (input.validity.typeMismatch) {
-    if (input.type === "email") return "Введите корректный email";
-    if (input.type === "url") return "Введите корректный URL";
-  }
-
-  if (input.validity.tooShort) {
-    return `Минимальная длина: ${input.minLength} симв.`;
-  }
-
-  if (input.validity.tooLong) {
-    return `Максимальная длина: ${input.maxLength} симв.`;
-  }
-
-  if (input.validity.patternMismatch) {
-    return "Неверный формат данных";
-  }
-
-  return input.validationMessage;
 }
 
 export function clearValidation(form, config, resetValues = true) {
@@ -123,5 +79,16 @@ export function clearValidation(form, config, resetValues = true) {
 
   if (resetValues) {
     form.reset();
+  }
+}
+
+function toggleButtonState(inputs, button, config) {
+  const isFormValid = Array.from(inputs).every((input) => input.validity.valid);
+  button.disabled = !isFormValid;
+
+  if (button.disabled) {
+    button.classList.add(config.inactiveButtonClass);
+  } else {
+    button.classList.remove(config.inactiveButtonClass);
   }
 }
