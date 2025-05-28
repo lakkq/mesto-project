@@ -62,16 +62,10 @@ function hideInputError(input, errorContainer, config) {
 export function clearValidation(form, config, resetValues = true) {
   const inputs = form.querySelectorAll(config.inputSelector);
   const submitButton = form.querySelector(config.submitButtonSelector);
-  const errorContainers = form.querySelectorAll('[class$="-error"]');
 
   inputs.forEach((input) => {
-    input.classList.remove(config.inputErrorClass);
-  });
-
-  errorContainers.forEach((container) => {
-    container.textContent = "";
-    container.classList.remove(config.errorClass);
-    container.removeAttribute("aria-live");
+    const errorElement = form.querySelector(`.${input.name}-error`);
+    hideInputError(input, errorElement, config);
   });
 
   submitButton.disabled = true;
